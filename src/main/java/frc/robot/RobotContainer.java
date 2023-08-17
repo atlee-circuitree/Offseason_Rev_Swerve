@@ -18,12 +18,15 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.SetColorCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LightSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
+import java.util.Random;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -32,8 +35,20 @@ import java.util.List;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
+  // Other functions
+  private Random rand = new Random();
+
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final LightSubsystem m_LightSubsystem = new LightSubsystem();
+
+  // The robot's commands
+  private final SetColorCommand m_SetGreen = new SetColorCommand(m_LightSubsystem, .73);
+  private final SetColorCommand m_SetRed = new SetColorCommand(m_LightSubsystem, .61);
+  private final SetColorCommand m_SetBlue = new SetColorCommand(m_LightSubsystem, .87);
+  private final SetColorCommand m_SetYellow = new SetColorCommand(m_LightSubsystem, .69);
+  private final SetColorCommand m_SetForest = new SetColorCommand(m_LightSubsystem, -.99);
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -46,11 +61,11 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Change the drive speed
-    double speed = .3;
+    double speed = .35;
 
     // Invert the X/Y axis (1 = false, -1 = true, 0 = disabled)
-    double invertX = -1;
-    double invertY = -1;
+    double invertX = 1;
+    double invertY = 1;
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -79,6 +94,17 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
+    new JoystickButton(m_driverController, 1)
+        .whileTrue(m_SetGreen);
+    new JoystickButton(m_driverController, 2)
+        .whileTrue(m_SetRed);
+    new JoystickButton(m_driverController, 3)
+        .whileTrue(m_SetBlue);
+    new JoystickButton(m_driverController, 4)
+        .whileTrue(m_SetYellow);
+    new JoystickButton(m_driverController, Button.kL1.value)
+        .whileTrue(m_SetForest);
+
   }
 
   /**
