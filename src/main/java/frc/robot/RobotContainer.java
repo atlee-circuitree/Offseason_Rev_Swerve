@@ -105,7 +105,7 @@ public class RobotContainer {
     new JoystickButton(m_driverController, 4)
         .whileTrue(m_SetYellow);
     new JoystickButton(m_driverController, Button.kL1.value)
-        .whileTrue(new RotateModulesCommand(m_robotDrive, 90.0));
+        .whileTrue(new RotateModulesCommand(m_robotDrive, 90.0).withTimeout(2));
 
   }
 
