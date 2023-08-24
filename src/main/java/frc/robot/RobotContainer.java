@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.RotateModulesCommand;
 import frc.robot.commands.SetColorCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LightSubsystem;
@@ -49,6 +50,7 @@ public class RobotContainer {
   private final SetColorCommand m_SetBlue = new SetColorCommand(m_LightSubsystem, .87);
   private final SetColorCommand m_SetYellow = new SetColorCommand(m_LightSubsystem, .69);
   private final SetColorCommand m_SetForest = new SetColorCommand(m_LightSubsystem, -.99);
+
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -103,7 +105,7 @@ public class RobotContainer {
     new JoystickButton(m_driverController, 4)
         .whileTrue(m_SetYellow);
     new JoystickButton(m_driverController, Button.kL1.value)
-        .whileTrue(m_SetForest);
+        .whileTrue(new RotateModulesCommand(m_robotDrive, 90.0));
 
   }
 
