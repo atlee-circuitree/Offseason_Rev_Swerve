@@ -5,16 +5,28 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.DriveSubsystem;
 
-public class RotateModulesToAngle extends CommandBase {
-  /** Creates a new RotateModulesToAngle. */
-  public RotateModulesToAngle() {
-    // Use addRequirements() here to declare subsystem dependencies.
+public class RotateModulesCommand extends CommandBase {
+
+  DriveSubsystem m_DriveSubsystem;
+  Double m_Angle;
+
+  public RotateModulesCommand(DriveSubsystem Drive, Double Angle) {
+    
+    m_DriveSubsystem = Drive;
+    m_Angle = Angle;
+
+    addRequirements(m_DriveSubsystem);
+
   }
-
-  // Called when the command is initially scheduled.
+ 
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+    m_DriveSubsystem.setAllToAngle(m_Angle);
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
