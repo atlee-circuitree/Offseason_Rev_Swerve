@@ -69,14 +69,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
- 
-    SmartDashboard.putNumber("Drive Encoder", m_frontLeft.getDrivePosition());
 
   }
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
+
+    SmartDashboard.putNumber("Drive Encoder", m_frontLeft.getDrivePosition());
+    SmartDashboard.putNumber("Gyro", m_gyro.getAngle());
 
     m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle()),

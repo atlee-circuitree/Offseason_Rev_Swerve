@@ -78,7 +78,7 @@ public class RobotContainer {
                 -MathUtil.applyDeadband((m_driverController.getLeftY() * speed) * invertX, OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband((m_driverController.getLeftX() * speed) * invertY, OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband((m_driverController.getRightX() * speed) * invertY, OIConstants.kDriveDeadband),
-                true, true),
+                false, true),
             m_robotDrive));
   }
 
@@ -104,9 +104,6 @@ public class RobotContainer {
         .whileTrue(m_SetBlue);
     new JoystickButton(m_driverController, 4)
         .whileTrue(m_SetYellow);
-    new JoystickButton(m_driverController, Button.kL1.value)
-        .whileTrue(new RotateModulesCommand(m_robotDrive, 90.0).withTimeout(2));
-
   }
 
   /**
@@ -127,9 +124,9 @@ public class RobotContainer {
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        List.of(new Translation2d(1, .5), new Translation2d(2, -.5), new Translation2d(3, 0)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
+        new Pose2d(4, 0, new Rotation2d(0)),
         config);
 
     var thetaController = new ProfiledPIDController(
