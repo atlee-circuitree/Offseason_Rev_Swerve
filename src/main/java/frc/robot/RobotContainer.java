@@ -64,21 +64,17 @@ public class RobotContainer {
 
     // Change the drive speed
     double speed = .35;
-
-    // Invert the X/Y axis (1 = false, -1 = true, 0 = disabled)
-    double invertX = 1;
-    double invertY = 1;
-
+ 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband((m_driverController.getLeftY() * speed) * invertX, OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband((m_driverController.getLeftX() * speed) * invertY, OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband((m_driverController.getRightX() * speed) * invertY, OIConstants.kDriveDeadband),
-                false, true),
+                MathUtil.applyDeadband((-m_driverController.getLeftY() * speed), OIConstants.kDriveDeadband),
+                MathUtil.applyDeadband((-m_driverController.getLeftX() * speed), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband((m_driverController.getRightX() * speed), OIConstants.kDriveDeadband),
+                true, true),
             m_robotDrive));
   }
 
