@@ -65,6 +65,7 @@ public final class Constants {
     public static final int kFrontFeederCanId = 20;
     public static final int kLeftFeederCanId = 21;
     public static final int kRightFeederCanId = 22;
+    public static final int kAngleCanId = 22;
 
     public static final boolean kGyroReversed = false;
   }

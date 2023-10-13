@@ -99,9 +99,9 @@ public class RobotContainer {
     new JoystickButton(m_driverController, 2)
         .whileTrue(new RunFeederCommand(-.5, m_FeederSubsystem));
     new JoystickButton(m_driverController, 3)
-        .whileTrue(m_SetBlue);
+        .whileTrue(new RunAngleMotorCommand, .3, m_FeederSubsystem);
     new JoystickButton(m_driverController, 4)
-        .whileTrue(m_SetYellow);
+        .whileTrue(new RunAngleMotorCommand, -.3, m_FeederSubsystem);
   }
 
   /**
