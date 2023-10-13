@@ -13,7 +13,7 @@ public class RunAngleMotorCommand extends CommandBase {
   double m_speed;
   FeederSubsystem m_FeederSubsystem;
 
-  public RunFeederCommand(double speed, FeederSubsystem feederSubsystem) {
+  public RunAngleMotorCommand(double speed, FeederSubsystem feederSubsystem) {
     
     m_speed = speed;
     m_FeederSubsystem = feederSubsystem;

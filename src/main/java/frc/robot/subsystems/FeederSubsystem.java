@@ -18,6 +18,7 @@ public class FeederSubsystem extends SubsystemBase {
     CANSparkMax FrontFeedMotor;
     TalonFX LeftFeedMotor;
     TalonFX RightFeedMotor;
+    CANSparkMax AngleMotor;
 
   public FeederSubsystem() {
 
