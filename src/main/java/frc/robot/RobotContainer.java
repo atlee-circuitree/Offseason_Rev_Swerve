@@ -96,13 +96,13 @@ public class RobotContainer {
             () -> m_robotDrive.setX(),
             m_robotDrive));
     new JoystickButton(m_driverController, 1)
-        .whileTrue(new RunFeederCommand(.3, m_FeederSubsystem));
+        .whileTrue(new RunFeederCommand(.15, m_FeederSubsystem));
     new JoystickButton(m_driverController, 2)
-        .whileTrue(new RunFeederCommand(-.75, m_FeederSubsystem));
+        .whileTrue(new RunFeederCommand(-.15, m_FeederSubsystem));
     new JoystickButton(m_driverController, 3)
-        .whileTrue(new RunAngleMotorCommand(.1, m_FeederSubsystem));
+        .whileTrue(new RunAngleMotorCommand(.05, m_FeederSubsystem));
     new JoystickButton(m_driverController, 4)
-        .whileTrue(new RunAngleMotorCommand(-.1, m_FeederSubsystem));
+        .whileTrue(new RunAngleMotorCommand(-.05, m_FeederSubsystem));
   }
 
   /**

@@ -6,27 +6,40 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.EncoderType;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class FeederSubsystem extends SubsystemBase {
   /** Creates a new FeederSubsystem. */
 
+    double ArmAngle;
+
     CANSparkMax FrontFeedMotor;
     TalonFX LeftFeedMotor;
     TalonFX RightFeedMotor;
     CANSparkMax AngleMotor;
+    SparkMaxAbsoluteEncoder AngleEncoder;
 
   public FeederSubsystem() {
+
 
     FrontFeedMotor = new CANSparkMax(Constants.DriveConstants.kFrontFeederCanId, MotorType.kBrushless);
     AngleMotor = new CANSparkMax(Constants.DriveConstants.kLeftFeederCanId, MotorType.kBrushless);
     LeftFeedMotor = new TalonFX(Constants.DriveConstants.kLeftFeederCanId);
     RightFeedMotor = new TalonFX(Constants.DriveConstants.kRightFeederCanId);
-
+ 
+    AngleEncoder = AngleMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    
   }
 
   public void RunFeeder(double speed) {
@@ -45,6 +58,9 @@ public class FeederSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    SmartDashboard.putNumber("ArmEncodserValue", AngleEncoder.getPosition());
+
     // This method will be called once per scheduler run
   }
 }
