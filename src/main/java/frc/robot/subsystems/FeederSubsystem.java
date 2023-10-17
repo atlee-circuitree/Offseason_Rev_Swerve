@@ -34,7 +34,7 @@ public class FeederSubsystem extends SubsystemBase {
 
 
     FrontFeedMotor = new CANSparkMax(Constants.DriveConstants.kFrontFeederCanId, MotorType.kBrushless);
-    AngleMotor = new CANSparkMax(Constants.DriveConstants.kLeftFeederCanId, MotorType.kBrushless);
+    AngleMotor = new CANSparkMax(Constants.DriveConstants.kAngleCanId, MotorType.kBrushless);
     LeftFeedMotor = new TalonFX(Constants.DriveConstants.kLeftFeederCanId);
     RightFeedMotor = new TalonFX(Constants.DriveConstants.kRightFeederCanId);
  
@@ -52,8 +52,16 @@ public class FeederSubsystem extends SubsystemBase {
 
   public void RunAngle(double speed) {
 
-    AngleMotor.set(speed);
+    if ( ( AngleEncoder.getPosition() > .84 && speed < 0) || (AngleEncoder.getPosition() < .6181 && speed > 0)) {
+ 
+      AngleMotor.set(0);
 
+    } else {
+
+      AngleMotor.set(speed);
+
+    }
+ 
   }
 
   @Override
