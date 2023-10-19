@@ -29,8 +29,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import java.util.List;
 import java.util.Random;
+import java.util.function.BooleanSupplier;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -91,18 +94,52 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    BooleanSupplier driver1LTSupplier = new BooleanSupplier() {
+
+        @Override
+        public boolean getAsBoolean() {
+          if(m_driverController.getLeftTriggerAxis() > 0.2){
+            return true;
+          }
+          else{
+            return false;
+          }
+        }
+      };
+
+    Trigger driver1LT = new Trigger(driver1LTSupplier);
+  
+    BooleanSupplier driver1RTSupplier = new BooleanSupplier() {
+  
+        @Override
+        public boolean getAsBoolean() {
+          if(m_driverController.getRightTriggerAxis() > 0.2){
+            return true;
+          }
+          else{
+            return false;
+          }
+        }
+      };
+
+    Trigger driver1RT = new Trigger(driver1RTSupplier);
+
     new JoystickButton(m_driverController, Button.kR1.value)
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
-    new JoystickButton(m_driverController, 1)
-        .whileTrue(new RunFeederCommand(.15, m_FeederSubsystem));
-    new JoystickButton(m_driverController, 2)
-        .whileTrue(new RunFeederCommand(-.15, m_FeederSubsystem));
     new JoystickButton(m_driverController, 4)
-        .whileTrue(new RunAngleMotorCommand(.3, m_FeederSubsystem));
+        .whileTrue(new RunAngleMotorCommand(.6, false, m_FeederSubsystem));
     new JoystickButton(m_driverController, 3)
-        .whileTrue(new RunAngleMotorCommand(-.3, m_FeederSubsystem));
+        .whileTrue(new RunAngleMotorCommand(-.6, false, m_FeederSubsystem));
+    new JoystickButton(m_driverController, 8)
+        .whileTrue(new RunAngleMotorCommand(.75, false, m_FeederSubsystem));
+
+    driver1LT.whileTrue(new RunFeederCommand(.12, m_FeederSubsystem));
+
+    driver1RT.whileTrue(new RunFeederCommand(-.3, m_FeederSubsystem));
+
   }
 
   /**
