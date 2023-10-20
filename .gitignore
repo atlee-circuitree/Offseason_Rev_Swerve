@@ -2,3 +2,5 @@
 build/jni/release/wpimath.pdb
 
 bin/main/frc/robot/
+
+build/
