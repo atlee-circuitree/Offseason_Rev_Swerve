@@ -42,6 +42,7 @@ public class RunAngleMotorCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
 
+    m_FeederSubsystem.UpdateSetPoint(m_FeederSubsystem.GetEncoder());
     m_FeederSubsystem.RunAngle(0);
 
   }

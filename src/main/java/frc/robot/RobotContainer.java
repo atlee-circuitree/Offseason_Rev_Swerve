@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.ChangeAngleCommand;
+import frc.robot.commands.MaintainAngleCommand;
 import frc.robot.commands.RotateModulesCommand;
 import frc.robot.commands.RunAngleMotorCommand;
 import frc.robot.commands.RunFeederCommand;
@@ -82,6 +84,9 @@ public class RobotContainer {
                 -MathUtil.applyDeadband((m_driverController.getRightX() * speed), OIConstants.kDriveDeadband),
                 true, true),
             m_robotDrive));
+
+    m_FeederSubsystem.setDefaultCommand(new MaintainAngleCommand(m_FeederSubsystem));
+
   }
 
   /**
@@ -119,13 +124,16 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         .whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
     driver1LT
-        .whileTrue(new RunFeederCommand(.15, m_FeederSubsystem));
+        .whileTrue(new RunFeederCommand(.085, m_FeederSubsystem));
     driver1RT
-        .whileTrue(new RunFeederCommand(-.15, m_FeederSubsystem));
+        .whileTrue(new RunFeederCommand(-.4, m_FeederSubsystem));
+    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        .whileTrue(new ChangeAngleCommand(.75, m_FeederSubsystem));
     new JoystickButton(m_driverController, XboxController.Button.kY.value)
         .whileTrue(new RunAngleMotorCommand(.3, m_FeederSubsystem));
     new JoystickButton(m_driverController, XboxController.Button.kX.value)
         .whileTrue(new RunAngleMotorCommand(-.3, m_FeederSubsystem));
+    
   }
 
   /**
