@@ -203,8 +203,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-    zeroHeading();
-    m_gyro.reset();
+  
   }
 
   // Sets all modules to an angle

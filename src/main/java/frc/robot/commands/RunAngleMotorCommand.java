@@ -15,11 +15,10 @@ public class RunAngleMotorCommand extends CommandBase {
   FeederSubsystem m_FeederSubsystem;
   boolean m_usePID;
  
-  public RunAngleMotorCommand(double value, boolean usePID, FeederSubsystem feederSubsystem) {
+  public RunAngleMotorCommand(double value, FeederSubsystem feederSubsystem) {
     
     m_value = value;
     m_FeederSubsystem = feederSubsystem;
-    m_usePID = usePID;
    
     addRequirements(feederSubsystem);
 
@@ -34,17 +33,9 @@ public class RunAngleMotorCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if (m_usePID = false) {
-
-      m_FeederSubsystem.RunAngle(m_value);
-
-    } else {
-
-      m_FeederSubsystem.RunAngle(m_value);
-
-    }
-
+ 
+    m_FeederSubsystem.RunAngle(m_value);
+ 
   }
 
   // Called once the command ends or is interrupted.
