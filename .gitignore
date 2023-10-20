@@ -1,6 +1,4 @@
 
 build/jni/release/wpimath.pdb
 
-build/classes/*
-
-bin/main/frc/*
+bin/main/frc/robot/
