@@ -4,20 +4,23 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.FeederSubsystem;
 
 public class RunAngleMotorCommand extends CommandBase {
   /** Creates a new RunFeederCommand. */
 
-  double m_speed;
+  double m_value;
   FeederSubsystem m_FeederSubsystem;
-
-  public RunAngleMotorCommand(double speed, FeederSubsystem feederSubsystem) {
+  boolean m_usePID;
+ 
+  public RunAngleMotorCommand(double value, boolean usePID, FeederSubsystem feederSubsystem) {
     
-    m_speed = speed;
+    m_value = value;
     m_FeederSubsystem = feederSubsystem;
-
+    m_usePID = usePID;
+   
     addRequirements(feederSubsystem);
 
   }
@@ -25,16 +28,22 @@ public class RunAngleMotorCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
-    m_FeederSubsystem.RunAngle(m_speed);
-
+ 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    m_FeederSubsystem.RunAngle(m_speed);
+    if (m_usePID = false) {
+
+      m_FeederSubsystem.RunAngle(m_value);
+
+    } else {
+
+      m_FeederSubsystem.RunAngle(m_value);
+
+    }
 
   }
 

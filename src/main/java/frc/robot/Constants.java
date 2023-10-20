@@ -57,6 +57,7 @@ public final class Constants {
     public static final int kFrontRightDrivingCanId = 27;
     public static final int kRearRightDrivingCanId = 24;
 
+    //public static final int kFrontLeftTurningCanId = 26;
     public static final int kFrontLeftTurningCanId = 26;
     public static final int kRearLeftTurningCanId = 22;
     public static final int kFrontRightTurningCanId = 28;
