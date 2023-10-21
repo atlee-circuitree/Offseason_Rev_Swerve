@@ -20,6 +20,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,7 +39,9 @@ public class FeederSubsystem extends SubsystemBase {
     SparkMaxAbsoluteEncoder AngleEncoder;
 
     PIDController AnglePID;
- 
+
+    AnalogInput DistanceSensor;
+
   public FeederSubsystem() {
 
 
@@ -52,16 +55,28 @@ public class FeederSubsystem extends SubsystemBase {
     FrontFeedMotor.setIdleMode(IdleMode.kBrake);
  
     AngleEncoder = AngleMotor.getAbsoluteEncoder(Type.kDutyCycle);
+
+    DistanceSensor = new AnalogInput(0);
  
     AnglePID = new PIDController(.3, 0, 0);
  
   }
 
   public void RunFeeder(double speed) {
+ 
+    if (DistanceSensor.getVoltage() < .3) {
 
-    FrontFeedMotor.set(-speed);
-    LeftFeedMotor.set(TalonFXControlMode.PercentOutput, speed);
-    RightFeedMotor.set(TalonFXControlMode.PercentOutput, -speed);
+      FrontFeedMotor.set(0);
+      LeftFeedMotor.set(TalonFXControlMode.PercentOutput, 0);
+      RightFeedMotor.set(TalonFXControlMode.PercentOutput, 0);
+
+    } else {
+
+      FrontFeedMotor.set(-speed);
+      LeftFeedMotor.set(TalonFXControlMode.PercentOutput, speed);
+      RightFeedMotor.set(TalonFXControlMode.PercentOutput, -speed);
+
+    }
 
   }
 
@@ -183,6 +198,7 @@ public class FeederSubsystem extends SubsystemBase {
   public void periodic() {
 
     SmartDashboard.putNumber("Arm Encoder Value", AngleEncoder.getPosition());
+    SmartDashboard.putNumber("Distance", DistanceSensor.getVoltage() );
  
     // This method will be called once per scheduler run
   }
