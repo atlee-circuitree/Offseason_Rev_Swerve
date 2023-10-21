@@ -103,21 +103,21 @@ public class FeederSubsystem extends SubsystemBase {
       AnglePID.setSetpoint(AngleEncoder.getPosition());
 
     }
+    
+    double error = Math.abs(10 * (AngleEncoder.getPosition() - AnglePID.getSetpoint()));
 
     SmartDashboard.putNumber("Maintain Angle", AnglePID.getSetpoint());
     SmartDashboard.putNumber("Current Angle", AngleEncoder.getPosition());
  
-    if (AngleEncoder.getPosition() < AnglePID.getSetpoint()) {
-
-      System.out.println("Correcting Upward");
-      AngleMotor.set(Adjustment * AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
-      SmartDashboard.putNumber("Moving at", Adjustment * AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
-
-    } else if (AngleEncoder.getPosition() > AnglePID.getSetpoint()) {
-
-      System.out.println("Correcting Downward");
-      AngleMotor.set(-1 * Adjustment * AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
-      SmartDashboard.putNumber("Moving at", -1 * Adjustment * AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
+    if (AngleEncoder.getPosition() > AnglePID.getSetpoint()) {
+ 
+      System.out.println("Correcting Upward" + " " + AngleEncoder.getPosition() + " < " + AnglePID.getSetpoint());
+      AngleMotor.set(error);
+      
+    } else if (AngleEncoder.getPosition() < AnglePID.getSetpoint()) {
+ 
+      System.out.println("Correcting Downward" + " " + AngleEncoder.getPosition() + " > " + AnglePID.getSetpoint());
+      AngleMotor.set(-error);
 
     } else {
 
@@ -138,7 +138,7 @@ public class FeederSubsystem extends SubsystemBase {
   }
 
   public void RunAngle(double speed) {
-
+ 
     double Adjustment = 30;
   
     if (speed > 0) {

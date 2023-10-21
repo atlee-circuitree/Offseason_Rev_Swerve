@@ -29,6 +29,7 @@ import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.LightSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -85,7 +86,7 @@ public class RobotContainer {
                 true, true),
             m_robotDrive));
 
-    //m_FeederSubsystem.setDefaultCommand(new MaintainAngleCommand(m_FeederSubsystem));
+    m_FeederSubsystem.setDefaultCommand(new MaintainAngleCommand(m_FeederSubsystem));
 
   }
 
@@ -128,7 +129,7 @@ public class RobotContainer {
     driver1RT
         .whileTrue(new RunFeederCommand(-.4, m_FeederSubsystem));
     new JoystickButton(m_driverController, XboxController.Button.kA.value)
-        .whileTrue(new ChangeAngleCommand(.85, m_FeederSubsystem));
+        .whileTrue(new ChangeAngleCommand(.8, m_FeederSubsystem));
     new JoystickButton(m_driverController, XboxController.Button.kY.value)
         .whileTrue(new RunAngleMotorCommand(.3, m_FeederSubsystem));
     new JoystickButton(m_driverController, XboxController.Button.kX.value)
@@ -154,9 +155,9 @@ public class RobotContainer {
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 0), new Translation2d(2, 0)),
+        List.of(new Translation2d(-1, 0), new Translation2d(-2, 0)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)), 
+        new Pose2d(-3, 0, new Rotation2d(0)), 
         config);
 
     var thetaController = new ProfiledPIDController(
@@ -177,8 +178,14 @@ public class RobotContainer {
 
     // Reset odometry to the starting pose of the trajectory.
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
+ 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+    //return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+    return new SequentialCommandGroup(
+    new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
+    new MaintainAngleCommand(m_FeederSubsystem).withTimeout(2),
+    new RunFeederCommand(.85, m_FeederSubsystem).withTimeout(1),
+    swerveControllerCommand
+    );
   }
 }
