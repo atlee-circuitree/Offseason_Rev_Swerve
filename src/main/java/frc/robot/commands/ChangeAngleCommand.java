@@ -18,6 +18,8 @@ public class ChangeAngleCommand extends CommandBase {
  
     m_FeederSubsystem = feederSubsystem;
     m_SetPoint = SetPoint;
+
+    addRequirements(feederSubsystem);
   
   }
 

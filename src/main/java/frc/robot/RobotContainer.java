@@ -85,7 +85,7 @@ public class RobotContainer {
                 true, true),
             m_robotDrive));
 
-    m_FeederSubsystem.setDefaultCommand(new MaintainAngleCommand(m_FeederSubsystem));
+    //m_FeederSubsystem.setDefaultCommand(new MaintainAngleCommand(m_FeederSubsystem));
 
   }
 
@@ -128,7 +128,7 @@ public class RobotContainer {
     driver1RT
         .whileTrue(new RunFeederCommand(-.4, m_FeederSubsystem));
     new JoystickButton(m_driverController, XboxController.Button.kA.value)
-        .whileTrue(new ChangeAngleCommand(.75, m_FeederSubsystem));
+        .whileTrue(new ChangeAngleCommand(.85, m_FeederSubsystem));
     new JoystickButton(m_driverController, XboxController.Button.kY.value)
         .whileTrue(new RunAngleMotorCommand(.3, m_FeederSubsystem));
     new JoystickButton(m_driverController, XboxController.Button.kX.value)

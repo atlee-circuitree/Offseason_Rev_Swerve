@@ -79,29 +79,44 @@ public class FeederSubsystem extends SubsystemBase {
 
   public void MaintainAngle() {
 
-    double Adjustment = 40;
+    double Adjustment = 4;
     int IsNegative = 1;
-    // 1 = True, 2 = False
- 
-    if (AngleEncoder.getPosition() < AnglePID.getSetpoint()) {
+    // 1 = True, -1 = False
 
-      IsNegative = -1;
+    if (AnglePID.getSetpoint() == 0) {
+
+      AnglePID.setSetpoint(AngleEncoder.getPosition());
 
     }
 
-    AngleMotor.set(Adjustment * -AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
+    SmartDashboard.putNumber("Maintain Angle", AnglePID.getSetpoint());
+    SmartDashboard.putNumber("Current Angle", AngleEncoder.getPosition());
+ 
+    if (AngleEncoder.getPosition() < AnglePID.getSetpoint()) {
 
-    if (IsNegative == -1 && AngleEncoder.getPosition() > .92) {
+      System.out.println("Correcting Upward");
+      AngleMotor.set(Adjustment * AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
+      SmartDashboard.putNumber("Moving at", Adjustment * AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
 
-      AngleMotor.set(0);
+    } else if (AngleEncoder.getPosition() > AnglePID.getSetpoint()) {
 
-    } else if (IsNegative == 1 && AngleEncoder.getPosition() < .92) {
-
-      AngleMotor.set(0);
+      System.out.println("Correcting Downward");
+      AngleMotor.set(-1 * Adjustment * AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
+      SmartDashboard.putNumber("Moving at", -1 * Adjustment * AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
 
     } else {
 
-      AngleMotor.set(Adjustment * -AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()));
+      AngleMotor.set(0);
+
+    }
+ 
+    if (IsNegative * Adjustment * AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()) < 0 && AngleEncoder.getPosition() > .92) {
+
+      AngleMotor.set(0);
+
+    } else if (IsNegative * Adjustment * -AnglePID.calculate(AngleEncoder.getPosition(), AnglePID.getSetpoint()) > 0 && AngleEncoder.getPosition() < .62) {
+
+      AngleMotor.set(0);
 
     }
 
@@ -156,6 +171,12 @@ public class FeederSubsystem extends SubsystemBase {
 
     }
   
+  }
+
+  public void RunAngle2(double speed) {
+
+    AngleMotor.set(speed);
+
   }
 
   @Override
