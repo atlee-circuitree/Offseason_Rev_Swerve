@@ -28,6 +28,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.LightSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -125,7 +126,7 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         .whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
     driver1LT
-        .whileTrue(new RunFeederCommand(.085, m_FeederSubsystem));
+        .whileTrue(new RunFeederCommand(.15, m_FeederSubsystem));
     driver1RT
         .whileTrue(new RunFeederCommand(-.4, m_FeederSubsystem));
     new JoystickButton(m_driverController, XboxController.Button.kA.value)
@@ -183,9 +184,8 @@ public class RobotContainer {
     //return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
     return new SequentialCommandGroup(
     new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
-    new MaintainAngleCommand(m_FeederSubsystem).withTimeout(2),
-    new RunFeederCommand(.85, m_FeederSubsystem).withTimeout(1),
-    swerveControllerCommand
-    );
+    new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
+    new RunFeederCommand(.65, m_FeederSubsystem).withTimeout(.5)
+    ).andThen(swerveControllerCommand);
   }
 }
