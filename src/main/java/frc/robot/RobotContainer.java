@@ -155,11 +155,11 @@ public class RobotContainer {
     // An example trajectory to follow. All units in meters.
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
+        new Pose2d(-1, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(-1, 0), new Translation2d(-2, 0)),
+        List.of(new Translation2d(-1.3, 0), new Translation2d(-1.6, 0)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(-3, 0, new Rotation2d(0)), 
+        new Pose2d(-2, 0, new Rotation2d(0)), 
         config);
 
     var thetaController = new ProfiledPIDController(
@@ -182,12 +182,12 @@ public class RobotContainer {
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
  
     // Run path following command, then stop at the end.
-    //return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-     
+    //return swerveControllerCommand.andThen(() -> m_robotDrive.drive(4, 0, 180, false, false));
+ 
     return new SequentialCommandGroup(
-    new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
-    new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
-    new RunFeederCommand(.65, m_FeederSubsystem).withTimeout(.5),
+    //new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1).andThen(() -> m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose())),
+    //new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
+    //new RunFeederCommand(.65, m_FeederSubsystem).withTimeout(.5),
     swerveControllerCommand);
     
     //return new AutoBalanceCommand(m_robotDrive, m_driverController, .1);
