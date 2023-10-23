@@ -17,8 +17,9 @@ public class AutoBalanceCommand extends CommandBase {
   /** Creates a new AutoBalance. */
 
   private DriveSubsystem drivetrain = new DriveSubsystem();
-  private XboxController xbox;
   private double rollTolerance;
+
+  private boolean initialMovement = true;
   
   private double horizontalSpeed;
   private double currentPitch;
@@ -30,13 +31,12 @@ public class AutoBalanceCommand extends CommandBase {
   private String movementDirection = "Level";
 
 
-  public AutoBalanceCommand(DriveSubsystem dt, XboxController xboxController, double RollTolerance) {
+  public AutoBalanceCommand(DriveSubsystem dt, double RollTolerance) {
     // Use addRequirements() here to declare subsystem dependencies.
     drivetrain = dt;
     rollTolerance = RollTolerance;
-    xbox = xboxController;
-
-    addRequirements(drivetrain);
+   
+    //addRequirements(drivetrain);
   }
 
   // Called when the command is initially scheduled.
@@ -82,8 +82,23 @@ public class AutoBalanceCommand extends CommandBase {
       horizontalSpeed = .3;
     }
 
+     if (currentPitch > rollTolerance || currentPitch < -rollTolerance) {
+
+       initialMovement = false;
+
+     } else {
+
+      initialMovement = true;
+
+     }
+
      //When NavX thinks tilted back, drive motors forward
-     if (currentPitch > rollTolerance) {
+     if (initialMovement = true) {
+
+       drivetrain.drive(-.3, 0, 0, false, false);
+       movementDirection = "Moving Backwards Initally";
+
+     } else if (currentPitch > rollTolerance) {
         
        drivetrain.drive(horizontalSpeed, 0, 0, false, false);
        movementDirection = "Moving Forwards";

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.MaintainAngleCommand;
 import frc.robot.commands.RotateModulesCommand;
@@ -87,7 +88,7 @@ public class RobotContainer {
                 true, true),
             m_robotDrive));
 
-    m_FeederSubsystem.setDefaultCommand(new MaintainAngleCommand(m_FeederSubsystem));
+    //m_FeederSubsystem.setDefaultCommand(new MaintainAngleCommand(m_FeederSubsystem));
 
   }
 
@@ -182,10 +183,13 @@ public class RobotContainer {
  
     // Run path following command, then stop at the end.
     //return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+     
     return new SequentialCommandGroup(
     new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
     new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
-    new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.5)
-    ).andThen(swerveControllerCommand);
+    new RunFeederCommand(.65, m_FeederSubsystem).withTimeout(.5),
+    swerveControllerCommand);
+    
+    //return new AutoBalanceCommand(m_robotDrive, m_driverController, .1);
   }
 }
