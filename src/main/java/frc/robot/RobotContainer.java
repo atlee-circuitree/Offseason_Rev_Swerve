@@ -185,7 +185,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
     new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
     new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
-    new RunFeederCommand(.65, m_FeederSubsystem).withTimeout(.5)
+    new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.5)
     ).andThen(swerveControllerCommand);
   }
 }
