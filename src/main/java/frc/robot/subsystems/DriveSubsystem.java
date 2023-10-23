@@ -115,6 +115,12 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
+  public float getNavXRollOutput() {
+
+    return m_gyro.getRoll();
+
+  }
+
   /**
    * Method to drive the robot using joystick info.
    *
