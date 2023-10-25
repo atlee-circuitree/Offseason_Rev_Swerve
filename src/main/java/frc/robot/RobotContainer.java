@@ -53,7 +53,7 @@ public class RobotContainer {
   private Random rand = new Random();
 
   // Auto Selector
-  private final SendableChooser<SequentialCommandGroup> m_chooser = new SendableChooser<>();
+  private final SendableChooser<SequentialCommandGroup> m_autoSelecter = new SendableChooser<>();
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
@@ -74,6 +74,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
     // Configure the button bindings
     configureButtonBindings();
 
@@ -81,7 +82,6 @@ public class RobotContainer {
     double speed = .35;
  
     // Configure default commands
-
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
@@ -189,27 +189,27 @@ public class RobotContainer {
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Autonomus Options
-    m_chooser.setDefaultOption("Score and Back Up", new SequentialCommandGroup(
-        new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
-        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
-        new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.5),
-        swerveControllerCommand));
+    m_autoSelecter.addOption("Score and Back Up", new SequentialCommandGroup(
+        new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.05),
+        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1),
+        new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.3),
+        swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false))));
 
-    m_chooser.addOption("Score and Auto Balance", new SequentialCommandGroup(
-        new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
-        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
-        new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.5),
-        swerveControllerCommand));
+    m_autoSelecter.addOption("Score and Auto Balance (Untested)", new SequentialCommandGroup(
+        new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.05),
+        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1),
+        new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.3),
+        swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false))));
 
-    m_chooser.addOption("Just Score", new SequentialCommandGroup(
-        new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
-        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5)));
+    m_autoSelecter.setDefaultOption("Just Score", new SequentialCommandGroup(
+        new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.05),
+        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1)));
 
-    m_chooser.addOption("Test", new SequentialCommandGroup(
+    m_autoSelecter.addOption("Test", new SequentialCommandGroup(
         new AutoBalanceCommand(m_robotDrive)));
  
     // Run path following command, then stop at the end.
     //return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-    return m_chooser.getSelected();
+    return m_autoSelecter.getSelected();
   }
 }
