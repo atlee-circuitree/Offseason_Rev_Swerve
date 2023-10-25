@@ -15,9 +15,11 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.MaintainAngleCommand;
 import frc.robot.commands.RotateModulesCommand;
@@ -50,6 +52,9 @@ public class RobotContainer {
   // Other functions
   private Random rand = new Random();
 
+  // Auto Selector
+  private final SendableChooser<SequentialCommandGroup> m_chooser = new SendableChooser<>();
+
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final LightSubsystem m_LightSubsystem = new LightSubsystem();
@@ -76,6 +81,7 @@ public class RobotContainer {
     double speed = .35;
  
     // Configure default commands
+
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
@@ -145,9 +151,11 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // Create config for trajectory
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+    TrajectoryConfig configReversed = new TrajectoryConfig(AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        // Add kinematics to ensure max speed is actually obeyed
+        .setKinematics(DriveConstants.kDriveKinematics);
+    configReversed.setReversed(true);
+    TrajectoryConfig config = new TrajectoryConfig(AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared)
         // Add kinematics to ensure max speed is actually obeyed
         .setKinematics(DriveConstants.kDriveKinematics);
 
@@ -159,7 +167,7 @@ public class RobotContainer {
         List.of(new Translation2d(-1, 0), new Translation2d(-2, 0)),
         // End 3 meters straight ahead of where we started, facing forward
         new Pose2d(-3, 0, new Rotation2d(0)), 
-        config);
+        configReversed);
 
     var thetaController = new ProfiledPIDController(
         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
@@ -179,13 +187,29 @@ public class RobotContainer {
 
     // Reset odometry to the starting pose of the trajectory.
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+
+    // Autonomus Options
+    m_chooser.setDefaultOption("Score and Back Up", new SequentialCommandGroup(
+        new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
+        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
+        new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.5),
+        swerveControllerCommand));
+
+    m_chooser.addOption("Score and Auto Balance", new SequentialCommandGroup(
+        new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
+        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
+        new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.5),
+        swerveControllerCommand));
+
+    m_chooser.addOption("Just Score", new SequentialCommandGroup(
+        new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
+        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5)));
+
+    m_chooser.addOption("Test", new SequentialCommandGroup(
+        new AutoBalanceCommand(m_robotDrive)));
  
     // Run path following command, then stop at the end.
     //return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-    return new SequentialCommandGroup(
-    new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.1),
-    new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1.5),
-    new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.5)
-    ).andThen(swerveControllerCommand);
+    return m_chooser.getSelected();
   }
 }
