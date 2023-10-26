@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -69,7 +71,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
- 
+
   }
 
   @Override
@@ -120,32 +122,6 @@ public class DriveSubsystem extends SubsystemBase {
   public float getNavXRollOutput() {
 
     return m_gyro.getRoll();
-
-  }
-
-  public void AutoBalance() {
-
-    double error = (m_gyro.getPitch() - 0) * .015;
-
-    if (error < .05) { error = 0; }
-
-    /* 
-    m_frontLeft.setDesiredState(new SwerveModuleState(error, new Rotation2d(0)));
-    m_frontRight.setDesiredState(new SwerveModuleState(error, new Rotation2d(0)));
-    m_rearLeft.setDesiredState(new SwerveModuleState(error, new Rotation2d(0)));
-    m_rearRight.setDesiredState(new SwerveModuleState(error, new Rotation2d(0)));
-    */
-
-    SmartDashboard.putNumber("Auto Balance Error", error);
-
-  }
-
-  public void KillDrive() {
-
-    m_frontLeft.setDesiredState(new SwerveModuleState(0, new Rotation2d(45)));
-    m_frontRight.setDesiredState(new SwerveModuleState(0, new Rotation2d(135)));
-    m_rearLeft.setDesiredState(new SwerveModuleState(0, new Rotation2d(225)));
-    m_rearRight.setDesiredState(new SwerveModuleState(0, new Rotation2d(315)));
 
   }
 
@@ -248,6 +224,34 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(Angle)));
     // Comment
   }
+
+  public BooleanSupplier IsUnbalanced = () -> {
+
+    if (m_gyro.getRoll() > 15 || m_gyro.getRoll() < -15) {
+
+      return true;
+
+    } else {
+
+      return false;
+
+    }
+ 
+  };
+
+  public BooleanSupplier IsBalanced = () -> {
+
+    if (m_gyro.getRoll() < 15 && m_gyro.getRoll() > -15) {
+
+      return true;
+
+    } else {
+
+      return false;
+
+    }
+ 
+  };
 
   /**
    * Sets the swerve ModuleStates.

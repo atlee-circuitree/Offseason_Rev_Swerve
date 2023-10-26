@@ -16,10 +16,10 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.MaintainAngleCommand;
 import frc.robot.commands.RotateModulesCommand;
@@ -53,7 +53,7 @@ public class RobotContainer {
   private Random rand = new Random();
 
   // Auto Selector
-  private final SendableChooser<SequentialCommandGroup> m_autoSelecter = new SendableChooser<>();
+  private final SendableChooser<String> m_autoSelecter = new SendableChooser<>();
 
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
@@ -68,7 +68,8 @@ public class RobotContainer {
   private final SetColorCommand m_SetForest = new SetColorCommand(m_LightSubsystem, -.99);
 
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  XboxController m_player1 = new XboxController(0);
+  XboxController m_player2 = new XboxController(1);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -78,8 +79,15 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    m_autoSelecter.setDefaultOption("Auto Balance", "Auto Balance");
+    m_autoSelecter.addOption("Score And Back Up", "Score And Back Up");
+    m_autoSelecter.addOption("Just Score", "Just Score");
+    m_autoSelecter.addOption("Test", "Test");
+
+    SmartDashboard.putData("Auto Selecter", m_autoSelecter);
+
     // Change the drive speed
-    double speed = .35;
+    double speed = .8;
  
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -87,9 +95,9 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
-                MathUtil.applyDeadband((-m_driverController.getLeftY() * speed), OIConstants.kDriveDeadband),
-                MathUtil.applyDeadband((-m_driverController.getLeftX() * speed), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband((m_driverController.getRightX() * speed), OIConstants.kDriveDeadband),
+                MathUtil.applyDeadband((-m_player1.getLeftY() * speed), OIConstants.kDriveDeadband),
+                MathUtil.applyDeadband((-m_player1.getLeftX() * speed), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband((m_player1.getRightX() * speed), OIConstants.kDriveDeadband),
                 true, true),
             m_robotDrive));
 
@@ -108,16 +116,16 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    BooleanSupplier driver1LTSupplier = new BooleanSupplier() { @Override public boolean getAsBoolean() { if (m_driverController.getLeftTriggerAxis() > 0.2) { return true; } else { return false; } } };
-    Trigger driver1LT = new Trigger(driver1LTSupplier);
+    BooleanSupplier driver1LTSupplier = new BooleanSupplier() { @Override public boolean getAsBoolean() { if (m_player2.getLeftTriggerAxis() > 0.2) { return true; } else { return false; } } };
+    Trigger driver2LT = new Trigger(driver1LTSupplier);
 
-    BooleanSupplier driver1RTSupplier = new BooleanSupplier() { @Override public boolean getAsBoolean() { if (m_driverController.getRightTriggerAxis() > 0.2) { return true; } else { return false; } } };
-    Trigger driver1RT = new Trigger(driver1RTSupplier);
+    BooleanSupplier driver1RTSupplier = new BooleanSupplier() { @Override public boolean getAsBoolean() { if (m_player2.getRightTriggerAxis() > 0.2) { return true; } else { return false; } } };
+    Trigger driver2RT = new Trigger(driver1RTSupplier);
 
     BooleanSupplier driverDPadUpSupplier = new BooleanSupplier() {
         @Override
         public boolean getAsBoolean() {
-            if(m_driverController.getRawAxis(1) > .2){
+            if(m_player1.getRawAxis(1) > .2){
               return true;
             }
             else{
@@ -127,20 +135,22 @@ public class RobotContainer {
         };
     Trigger driverDPadUp = new Trigger(driverDPadUpSupplier);
  
-    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+    new JoystickButton(m_player1, XboxController.Button.kRightBumper.value)
         .whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
-    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+    new JoystickButton(m_player1, XboxController.Button.kLeftBumper.value)
         .whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-    driver1LT
-        .whileTrue(new RunFeederCommand(.15, m_FeederSubsystem));
-    driver1RT
-        .whileTrue(new RunFeederCommand(-.4, m_FeederSubsystem));
-    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+    driver2LT
+        .whileTrue(new RunFeederCommand(.1, m_FeederSubsystem));
+    driver2RT
+        .whileTrue(new RunFeederCommand(-.5, m_FeederSubsystem));
+    new JoystickButton(m_player2, XboxController.Button.kA.value)
         .whileTrue(new ChangeAngleCommand(.8, m_FeederSubsystem));
-    new JoystickButton(m_driverController, XboxController.Button.kY.value)
-        .whileTrue(new RunAngleMotorCommand(.3, m_FeederSubsystem));
-    new JoystickButton(m_driverController, XboxController.Button.kX.value)
-        .whileTrue(new RunAngleMotorCommand(-.3, m_FeederSubsystem));
+    new JoystickButton(m_player2, XboxController.Button.kB.value)
+        .whileTrue(new RunFeederCommand(-.85, m_FeederSubsystem));
+    new JoystickButton(m_player2, XboxController.Button.kY.value)
+        .whileTrue(new RunAngleMotorCommand(.6, m_FeederSubsystem));
+    new JoystickButton(m_player2, XboxController.Button.kX.value)
+        .whileTrue(new RunAngleMotorCommand(-.6, m_FeederSubsystem));
     
   }
 
@@ -155,26 +165,49 @@ public class RobotContainer {
         // Add kinematics to ensure max speed is actually obeyed
         .setKinematics(DriveConstants.kDriveKinematics);
     configReversed.setReversed(true);
+
     TrajectoryConfig config = new TrajectoryConfig(AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared)
         // Add kinematics to ensure max speed is actually obeyed
         .setKinematics(DriveConstants.kDriveKinematics);
 
+    TrajectoryConfig configHalfSpeed = new TrajectoryConfig(AutoConstants.kMaxSpeedMetersPerSecond / 1.5, AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        // Add kinematics to ensure max speed is actually obeyed
+        .setKinematics(DriveConstants.kDriveKinematics);
+
     // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+    Trajectory GoBack = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
         List.of(new Translation2d(-1, 0), new Translation2d(-2, 0)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(-3, 0, new Rotation2d(0)), 
+        new Pose2d(-5, 0, new Rotation2d(0)), 
         configReversed);
+
+        Trajectory GoForward = TrajectoryGenerator.generateTrajectory(
+        // Start at the origin facing the +X direction
+        new Pose2d(0, 0, new Rotation2d(0)),
+        // Pass through these two interior waypoints, making an 's' curve path
+        List.of(new Translation2d(1, 0), new Translation2d(2, 0)),
+        // End 3 meters straight ahead of where we started, facing forward
+        new Pose2d(5, 0, new Rotation2d(0)), 
+        config);
+
+        Trajectory GoForwardHalfSpeed = TrajectoryGenerator.generateTrajectory(
+            // Start at the origin facing the +X direction
+            new Pose2d(0, 0, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+            List.of(new Translation2d(1, 0), new Translation2d(2, 0)),
+            // End 3 meters straight ahead of where we started, facing forward
+            new Pose2d(5, 0, new Rotation2d(0)), 
+            config);
 
     var thetaController = new ProfiledPIDController(
         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        exampleTrajectory,
+    SwerveControllerCommand GoBackCommand = new SwerveControllerCommand(
+        GoBack,
         m_robotDrive::getPose, // Functional interface to feed supplier
         DriveConstants.kDriveKinematics,
 
@@ -185,31 +218,86 @@ public class RobotContainer {
         m_robotDrive::setModuleStates,
         m_robotDrive);
 
+    SwerveControllerCommand GoBackCommandTo = new SwerveControllerCommand(
+        GoBack,
+        m_robotDrive::getPose, // Functional interface to feed supplier
+        DriveConstants.kDriveKinematics,
+    
+            // Position controllers
+        new PIDController(AutoConstants.kPXController, 0, 0),
+        new PIDController(AutoConstants.kPYController, 0, 0),
+        thetaController,
+        m_robotDrive::setModuleStates,
+        m_robotDrive);
+
+        SwerveControllerCommand GoForwardCommand = new SwerveControllerCommand(
+        GoForward,
+        m_robotDrive::getPose, // Functional interface to feed supplier
+        DriveConstants.kDriveKinematics,
+        
+        // Position controllers
+        new PIDController(AutoConstants.kPXController, 0, 0),
+        new PIDController(AutoConstants.kPYController, 0, 0),
+        thetaController,
+        m_robotDrive::setModuleStates,
+        m_robotDrive);
+
+        SwerveControllerCommand GoForwardHalfSpeedCommand = new SwerveControllerCommand(
+            GoForwardHalfSpeed,
+            m_robotDrive::getPose, // Functional interface to feed supplier
+            DriveConstants.kDriveKinematics,
+    
+            // Position controllers
+            new PIDController(AutoConstants.kPXController, 0, 0),
+            new PIDController(AutoConstants.kPYController, 0, 0),
+            thetaController,
+            m_robotDrive::setModuleStates,
+            m_robotDrive);
+
     // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+    m_robotDrive.resetOdometry(GoBack.getInitialPose());
 
     // Autonomus Options
-    m_autoSelecter.addOption("Score and Back Up", new SequentialCommandGroup(
+    SequentialCommandGroup ScoreAndDriveBack = new SequentialCommandGroup(
         new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.05),
         new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1),
-        new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.3),
-        swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false))));
+        new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(1),
+        GoBackCommandTo.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false)));
 
-    m_autoSelecter.addOption("Score and Auto Balance (Untested)", new SequentialCommandGroup(
+    SequentialCommandGroup ScoreAndAutoBalance = new SequentialCommandGroup(
         new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.05),
         new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1),
-        new RunFeederCommand(-.65, m_FeederSubsystem).withTimeout(.3),
-        swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false))));
+        new RunFeederCommand(-.85, m_FeederSubsystem).withTimeout(.3),
+        GoBackCommand,
+        GoForwardCommand.until(m_robotDrive.IsUnbalanced),
+        GoForwardHalfSpeedCommand.until(m_robotDrive.IsBalanced));
 
-    m_autoSelecter.setDefaultOption("Just Score", new SequentialCommandGroup(
+    SequentialCommandGroup OnlyScore = new SequentialCommandGroup(
         new ChangeAngleCommand(.72, m_FeederSubsystem).withTimeout(.05),
-        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1)));
+        new MaintainAngleCommand(m_FeederSubsystem).withTimeout(1));
 
-    m_autoSelecter.addOption("Test", new SequentialCommandGroup(
-        new AutoBalanceCommand(m_robotDrive)));
+    SequentialCommandGroup Test = new SequentialCommandGroup();
  
     // Run path following command, then stop at the end.
     //return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-    return m_autoSelecter.getSelected();
+    
+    if (m_autoSelecter.getSelected() == "Auto Balance") {
+
+        return ScoreAndAutoBalance;
+
+    } else if (m_autoSelecter.getSelected() == "Only Score") {
+
+        return OnlyScore;
+
+    } else if (m_autoSelecter.getSelected() == "Score And Back Up") {
+
+        return ScoreAndDriveBack;
+
+    } else {
+
+        return Test;
+
+    }
+
   }
 }

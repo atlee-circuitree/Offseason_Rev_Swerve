@@ -64,20 +64,10 @@ public class FeederSubsystem extends SubsystemBase {
 
   public void RunFeeder(double speed) {
  
-    if (DistanceSensor.getVoltage() < .3) {
-
-      FrontFeedMotor.set(0);
-      LeftFeedMotor.set(TalonFXControlMode.PercentOutput, 0);
-      RightFeedMotor.set(TalonFXControlMode.PercentOutput, 0);
-
-    } else {
-
-      FrontFeedMotor.set(-speed);
-      LeftFeedMotor.set(TalonFXControlMode.PercentOutput, speed);
-      RightFeedMotor.set(TalonFXControlMode.PercentOutput, -speed);
-
-    }
-
+    FrontFeedMotor.set(-speed * 4);
+    LeftFeedMotor.set(TalonFXControlMode.PercentOutput, speed);
+    RightFeedMotor.set(TalonFXControlMode.PercentOutput, -speed);
+ 
   }
 
   public double GetEncoder() {
